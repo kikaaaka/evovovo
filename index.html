@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Эволюция</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#10262c">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Эволюция">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="depth" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b"/><feSpecularLighting in="b" surfaceScale="4" specularConstant=".7" specularExponent="18" lighting-color="#fff" result="s"><fePointLight x="-20" y="-30" z="80"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/><feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".55" k4="0"/></filter></defs></svg>
+  <div id="ui">
+    <span class="chip"><span class="ico" data-ic="dna"></span>ДНК: <b id="coins">0</b></span>
+    <span class="chip"><span class="ico" data-ic="gem"></span><b id="gems">0</b></span>
+    <span class="chip"><span class="ico" data-ic="drop"></span>Доход: <span>+<b id="income">0.00</b>/с</span></span>
+    <div id="energy" title="Энергия: заполните шкалу, чтобы получить всплеск"><i id="energyBar"></i></div>
+  </div>
+
+  <div id="game"></div>
+  <div id="goal"></div>
+  <div id="tip" hidden></div>
+  <div id="shop"></div>
+  <div id="bonuses"></div>
+  <div id="locPanel"><div class="lp-head" id="lpHead" title="Локации"><span data-ic="map"></span></div><div class="loc-tabs" id="locTabs"></div></div>
+  <nav id="nav">
+    <button class="nav-btn" id="btnShop"><span class="ni" data-ic="shop"></span><small>Магазин</small></button>
+    <button class="nav-btn" id="btnDex"><span class="ni" data-ic="book"></span><small>Энциклопедия</small></button>
+    <button class="nav-btn" id="btnAch"><span class="ni" data-ic="trophy"></span><small id="achLabel">Достижения</small></button>
+    <button class="nav-btn" id="btnInfo"><span class="ni" data-ic="info"></span><small>Инфо</small></button>
+    <button class="nav-btn" id="btnSettings"><span class="ni" data-ic="gear"></span><small>Настройки</small></button>
+    <button class="nav-btn" id="btnAscend" style="display:none"><span class="ni" data-ic="ascend"></span><small>Вознесение</small></button>
+  </nav>
+
+  <div class="modal" id="modalShop"><div class="panel"><div class="panel-head"><h2>🛒 Магазин</h2><button class="x" data-close aria-label="Закрыть">✕</button></div><div class="wallet"><span>🧬 <b id="w-dna">0</b></span><span>💎 <b id="w-gem">0</b></span></div>
+    <div class="tabs"><button class="tab active" data-pane="paneUp">Улучшения</button><button class="tab" data-pane="paneBuy">Существа</button><button class="tab" data-pane="paneGem">💎 Кристаллы</button></div>
+    <div class="pane" id="paneUp"><div id="shopList" class="shop-list"></div></div>
+    <div class="pane hidden" id="paneBuy"><div id="buyList" class="shop-list"></div></div>
+    <div class="pane hidden" id="paneGem"><h3 class="sub">✦ Особые улучшения</h3><div id="guList" class="shop-list"></div><h3 class="sub">Существа и награды</h3><div id="gemList" class="shop-list"></div></div></div></div>
+  <div class="modal" id="modalDex"><div class="panel"><div class="panel-head"><h2>📖 Энциклопедия</h2><button class="x" data-close aria-label="Закрыть">✕</button></div><p class="hint">Изучено: <b id="dexCount">1</b> / 25</p><div class="tabs dex-tabs" id="dexTabs"></div><div id="dexList" class="dex-grid"></div></div></div>
+  <div class="modal" id="modalInfo"><div class="panel"><div class="panel-head"><h2>ℹ️ Информация</h2><button class="x" data-close aria-label="Закрыть">✕</button></div><div class="row"><span>⭐ Макс. уровень</span><b id="maxLevel">1</b></div>
+    <button id="topBtn">🏅 Рейтинг игроков</button>
+    <h3 class="sub">📊 Статистика</h3><div id="infoStats"></div>
+    <h3 class="sub">📘 Как играть</h3><ul class="guide"><li>Нажимайте на капсулы, чтобы открывать существ, и на существ, чтобы получать ДНК.</li><li>Сведите двух одинаковых существ, и они сольются в следующий вид. Каждые 5 уровней открывается новая локация.</li><li>Все существа производят ДНК с одним тактом, но чем выше уровень, тем больше ДНК за такт.</li><li>Тратьте ДНК в магазине, а кристаллы на особые улучшения, которые не сбрасываются.</li><li>Магнит из магазина сам сводит пары. Бонусы слева ускоряют рост.</li><li>Когда откроются все 25 видов, сливайте двух существ 25 уровня: они вознесутся в локацию «Вечность» и сделают Вознесённого сильнее.</li></ul></div></div>
+  <div class="modal" id="modalSettings"><div class="panel"><div class="panel-head"><h2>⚙️ Настройки</h2><button class="x" data-close aria-label="Закрыть">✕</button></div>
+    <label class="row"><span>Всплывающие числа</span><input type="checkbox" id="set-pops"></label>
+    <label class="row"><span>Существа двигаются</span><input type="checkbox" id="set-move"></label>
+    <label class="row"><span>Объёмные блики на существах</span><input type="checkbox" id="set-hq"></label>
+    <button id="installBtn" style="display:none">📲 Установить игру на устройство</button>
+    <p class="hint" id="iosHint" style="display:none">Чтобы установить на iPhone: «Поделиться» → «На экран Домой».</p>
+    <div class="row"><span>Язык / Language</span><span class="langs"><button data-lang="ru">RU</button><button data-lang="en">EN</button><button data-lang="tr">TR</button></span></div>
+    <label class="row"><span>Звуки</span><input type="checkbox" id="set-sound"></label>
+    <label class="row"><span>💎 Бесконечные кристаллы (тест)</span><input type="checkbox" id="set-infgems"></label>
+    <button id="gemsOffBtn" disabled>💎 Убрать бесконечные кристаллы</button>
+    <label class="row"><span>Музыка</span><input type="checkbox" id="set-music"></label>
+    <label class="row"><span>Громкость музыки</span><input type="range" id="set-mvol" min="0" max="100"></label>
+    <button id="resetBtn" class="danger">Сбросить весь прогресс</button></div></div>
+
+  <div class="modal" id="modalTop"><div class="panel"><div class="panel-head"><h2>🏅 Рейтинг игроков</h2><button class="x" data-close aria-label="Закрыть">✕</button></div><div id="topList"></div></div></div>
+  <div class="modal" id="modalAscend"><div class="panel"><div class="panel-head"><h2>✦ Вознесение</h2><button class="x" data-close aria-label="Закрыть">✕</button></div><div id="ascInfo"></div><h3 class="sub">Звёздные дары</h3><div id="sgList" class="shop-list"></div></div></div>
+  <div class="modal" id="modalAch"><div class="panel"><div class="panel-head"><h2>🏆 Достижения</h2><button class="x" data-close aria-label="Закрыть">✕</button></div><h3 class="sub">📅 Задания дня</h3><div id="questList"></div><h3 class="sub">🏆 Достижения</h3><div id="achList"></div></div></div>
+
+
+  <script src="js/config.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/creatures.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/ascension.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/quests.js"></script>
+  <script src="js/cloud.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
